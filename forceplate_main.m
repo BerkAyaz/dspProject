@@ -26,6 +26,7 @@ classdef forceplate_main < matlab.apps.AppBase
     end
 
     %Hallo ik ben berk
+    %hey ik ben bas
     methods (Access = private)
         
     end
