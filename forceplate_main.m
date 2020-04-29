@@ -274,9 +274,9 @@ classdef forceplate_main < matlab.apps.AppBase
             global FP_A_TOTAL_PEAKS FP_A_TOTAL_PK_LOCS FP_A_TOTAL_VALLEYS FP_A_TOTAL_VL_LOCS;
             global FP_B_TOTAL_PEAKS FP_B_TOTAL_PK_LOCS FP_B_TOTAL_VALLEYS FP_B_TOTAL_VL_LOCS;
             
-            [FP_A_TOTAL_PEAKS, FP_A_TOTAL_PK_LOCS] = findpeaks(FP_A_TOTAL, 'MinPeakWidth', 50);
+            [FP_A_TOTAL_PEAKS, FP_A_TOTAL_PK_LOCS] = findpeaks(FP_A_TOTAL, 'MinPeakProminence', 5);
             invert_A_TOTAL = -FP_A_TOTAL;
-            [FP_A_TOTAL_VALLEYS, FP_A_TOTAL_VL_LOCS] = findpeaks(invert_A_TOTAL, 'MinPeakWidth', 50);
+            [FP_A_TOTAL_VALLEYS, FP_A_TOTAL_VL_LOCS] = findpeaks(invert_A_TOTAL, 'MinPeakProminence', 5);
             FP_A_TOTAL_VALLEYS = -FP_A_TOTAL_VALLEYS;
             FP_A_TOTAL_PK_LOCS = FP_A_TOTAL_PK_LOCS + FP_A_time(1,1);
             FP_A_TOTAL_VL_LOCS = FP_A_TOTAL_VL_LOCS + FP_A_time(1,1);
@@ -285,9 +285,9 @@ classdef forceplate_main < matlab.apps.AppBase
             legend(app.UIAxes,"FP_A_0", "FP_A_1", "FP_A_2", "FP_A_3", "FP A SUM", "FP A Peaks", "FP A Valleys");
             
             
-            [FP_B_TOTAL_PEAKS, FP_B_TOTAL_PK_LOCS] = findpeaks(FP_B_TOTAL, 'MinPeakWidth', 50);
+            [FP_B_TOTAL_PEAKS, FP_B_TOTAL_PK_LOCS] = findpeaks(FP_B_TOTAL, 'MinPeakProminence', 5);
             invert_B_TOTAL = -FP_B_TOTAL;
-            [FP_B_TOTAL_VALLEYS, FP_B_TOTAL_VL_LOCS] = findpeaks(invert_B_TOTAL, 'MinPeakWidth', 50);
+            [FP_B_TOTAL_VALLEYS, FP_B_TOTAL_VL_LOCS] = findpeaks(invert_B_TOTAL, 'MinPeakProminence', 5);
             FP_B_TOTAL_VALLEYS = -FP_B_TOTAL_VALLEYS;
             FP_B_TOTAL_PK_LOCS = FP_B_TOTAL_PK_LOCS + FP_B_time(1,1);
             FP_B_TOTAL_VL_LOCS = FP_B_TOTAL_VL_LOCS + FP_B_time(1,1);
@@ -299,7 +299,7 @@ classdef forceplate_main < matlab.apps.AppBase
         % Button pushed function: SmoothAButton
         function SmoothAButtonPushed(app, event)
             global FP_A_0 FP_A_1 FP_A_2 FP_A_3 FP_A_TOTAL CoP_A_X CoP_A_Y WIDTH_FP LENGTH_FP
-            FP_A_TOTAL = smoothdata(FP_A_TOTAL);
+            FP_A_TOTAL = smoothdata(FP_A_TOTAL, 'gaussian',50);
             ColumnselectADropDownValueChanged(app);
             CoP_A_X = (WIDTH_FP/2).*((FP_A_1 + FP_A_2 - FP_A_1 - FP_A_3)./FP_A_TOTAL);
             CoP_A_Y = (LENGTH_FP/2).*((FP_A_0 + FP_A_1 - FP_A_2 - FP_A_3)./FP_A_TOTAL);
