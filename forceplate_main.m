@@ -30,24 +30,20 @@ classdef forceplate_main < matlab.apps.AppBase
         DataselectDropDown          matlab.ui.control.DropDown
     end
 
-    %Hallo ik ben berk
-    methods (Access = private)
-        
-    end
-    
+   
 
     % Callbacks that handle component events
     methods (Access = private)
 
         % Menu selected function: LoadfileMenu
         function LoadfileMenuSelected(app, event)
-            global signals WIDTH_FP LENGTH_FP FP_A_time FP_A_0 FP_A_1 FP_A_2 FP_A_3 FP_B_time FP_B_0 FP_B_1 FP_B_2 FP_B_3 FP_A_TOTAL FP_B_TOTAL CoP_A_X CoP_A_Y CoP_B_X CoP_B_Y;
+            global signals WIDTH_FP LENGTH_FP FP_A_time FP_A_0 FP_A_1 FP_A_2 FP_A_3 FP_B_time FP_B_0 FP_B_1 FP_B_2 FP_B_3 FP_A_TOTAL FP_B_TOTAL FP_TOTAL_ALL FP_TOTAL_time CoP_A_X CoP_A_Y CoP_B_X CoP_B_Y;
             [filename,path] = uigetfile('*.txt');  
             filepath = strcat(path,filename);     
             fID = fopen(filepath);
             datacell = textscan(fID,'%f%f%f%f%f%f%f%f%f%f%f%f', 'HeaderLines', 3, 'CollectOutput', 1);
             fclose(fID);
-            signals= datacell{1};
+            signals = datacell{1};
             signals(:,12);
             C = 406.831;
             nbits = 16;
@@ -76,7 +72,17 @@ classdef forceplate_main < matlab.apps.AppBase
             CoP_A_X = (WIDTH_FP/2).*((FP_A_1 + FP_A_2 - FP_A_1 - FP_A_3)./FP_A_TOTAL);
             CoP_A_Y = (LENGTH_FP/2).*((FP_A_0 + FP_A_1 - FP_A_2 - FP_A_3)./FP_A_TOTAL);
             CoP_B_X = (WIDTH_FP/2).*((FP_B_1 + FP_B_2 - FP_B_1 - FP_B_3)./FP_B_TOTAL);
-            CoP_B_Y = (LENGTH_FP/2).*((FP_B_0 + FP_B_1 - FP_B_2 - FP_B_3)./FP_B_TOTAL); 
+            CoP_B_Y = (LENGTH_FP/2).*((FP_B_0 + FP_B_1 - FP_B_2 - FP_B_3)./FP_B_TOTAL);
+            
+            % Summing both forceplates
+            FP_TOTAL_ALL = FP_A_TOTAL + FP_B_TOTAL;
+            if FP_A_time(1) == 0
+                FP_TOTAL_time = FP_A_time;
+            elseif FP_B_time(1) == 0
+                FP_TOTAL_time = FP_B_time;
+            end
+            
+            % Plot FP1 graph
             hold(app.UIAxes, "off");
             plot(app.UIAxes,FP_A_time, FP_A_0);
             hold(app.UIAxes, "on");
@@ -88,6 +94,7 @@ classdef forceplate_main < matlab.apps.AppBase
             ylabel(app.UIAxes, "weight [kgf]");
             legend(app.UIAxes,"FP_A_0", "FP_A_1", "FP_A_2", "FP_A_3", "FP A SUM");
             
+            % Plot FP2 graph
             hold(app.UIAxes2, "off");
             plot(app.UIAxes2,FP_B_time, FP_B_0);
             hold(app.UIAxes2, "on");
@@ -98,6 +105,16 @@ classdef forceplate_main < matlab.apps.AppBase
             xlabel(app.UIAxes2, "time[datapoints]");
             ylabel(app.UIAxes2, "weight [kgf]");
             legend(app.UIAxes2,"FP_B_0", "FP_B_1", "FP_B_2", "FP_B_3", "FP B SUM");
+            
+            % Plot summed FP's graph
+            hold(app.UIAxes3, "off");
+            plot(app.UIAxes3, FP_TOTAL_time, FP_A_TOTAL);
+            hold(app.UIAxes3, "on");
+            plot(app.UIAxes3, FP_TOTAL_time, FP_B_TOTAL);
+            plot(app.UIAxes3, FP_TOTAL_time, FP_TOTAL_ALL);
+            xlabel(app.UIAxes3, "time [datapoints]");
+            ylabel(app.UIAxes3, "weight [kgf]");
+            legend(app.UIAxes3,"FP_A TOTAL", "FP_B TOTAL", "FP TOTAL SUM");
             
             hold(app.UIAxesCoP1, "off");
             plot(app.UIAxesCoP1,CoP_A_X, CoP_A_Y);
