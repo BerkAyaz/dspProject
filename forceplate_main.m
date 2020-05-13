@@ -3,31 +3,35 @@ classdef forceplate_main < matlab.apps.AppBase
     % Properties that correspond to app components
     properties (Access = public)
         ForceplateProcessingtoolUIFigure  matlab.ui.Figure
-        Menu                        matlab.ui.container.Menu
-        LoadfileMenu                matlab.ui.container.Menu
-        UITable                     matlab.ui.control.Table
-        CalculatepeaksButton        matlab.ui.control.Button
-        TabGroup                    matlab.ui.container.TabGroup
-        Forceplates1and2Tab         matlab.ui.container.Tab
-        UIAxes                      matlab.ui.control.UIAxes
-        UIAxesCoP1                  matlab.ui.control.UIAxes
-        UIAxes2                     matlab.ui.control.UIAxes
-        UIAxesCoP2                  matlab.ui.control.UIAxes
-        SmoothAButton               matlab.ui.control.Button
-        ResetdataAButton            matlab.ui.control.Button
-        SmoothBButton               matlab.ui.control.Button
-        ResetdataBButton            matlab.ui.control.Button
-        SliderLabel                 matlab.ui.control.Label
-        Slider                      matlab.ui.control.Slider
-        ColumnselectADropDownLabel  matlab.ui.control.Label
-        ColumnselectADropDown       matlab.ui.control.DropDown
-        ColumnselectBDropDownLabel  matlab.ui.control.Label
-        ColumnselectBDropDown       matlab.ui.control.DropDown
-        SummedForceplatesTab        matlab.ui.container.Tab
-        UIAxes3                     matlab.ui.control.UIAxes
-        UIAxesCoP3                  matlab.ui.control.UIAxes
-        DataselectDropDownLabel     matlab.ui.control.Label
-        DataselectDropDown          matlab.ui.control.DropDown
+        Menu                            matlab.ui.container.Menu
+        LoadfileMenu                    matlab.ui.container.Menu
+        UITable                         matlab.ui.control.Table
+        CalculatepeaksButton            matlab.ui.control.Button
+        TabGroup                        matlab.ui.container.TabGroup
+        Forceplates1and2Tab             matlab.ui.container.Tab
+        UIAxes                          matlab.ui.control.UIAxes
+        UIAxesCoP1                      matlab.ui.control.UIAxes
+        UIAxes2                         matlab.ui.control.UIAxes
+        UIAxesCoP2                      matlab.ui.control.UIAxes
+        SmoothAButton                   matlab.ui.control.Button
+        ResetdataAButton                matlab.ui.control.Button
+        SmoothBButton                   matlab.ui.control.Button
+        ResetdataBButton                matlab.ui.control.Button
+        SliderLabel                     matlab.ui.control.Label
+        Slider                          matlab.ui.control.Slider
+        ColumnselectADropDownLabel      matlab.ui.control.Label
+        ColumnselectADropDown           matlab.ui.control.DropDown
+        ColumnselectBDropDownLabel      matlab.ui.control.Label
+        ColumnselectBDropDown           matlab.ui.control.DropDown
+        SummedForceplatesTab            matlab.ui.container.Tab
+        UIAxes3                         matlab.ui.control.UIAxes
+        UIAxesCoP3                      matlab.ui.control.UIAxes
+        SmoothTOTALButton               matlab.ui.control.Button
+        ResetdataTOTALButton            matlab.ui.control.Button
+        ColumnselectTOTALDropDownLabel  matlab.ui.control.Label
+        ColumnselectTOTALDropDown       matlab.ui.control.DropDown
+        DataselectDropDownLabel         matlab.ui.control.Label
+        DataselectDropDown              matlab.ui.control.DropDown
     end
 
    
@@ -37,8 +41,9 @@ classdef forceplate_main < matlab.apps.AppBase
 
         % Menu selected function: LoadfileMenu
         function LoadfileMenuSelected(app, event)
-            global signals WIDTH_FP LENGTH_FP FP_A_time FP_A_0 FP_A_1 FP_A_2 FP_A_3 FP_B_time FP_B_0 FP_B_1 FP_B_2 FP_B_3 FP_A_TOTAL FP_B_TOTAL FP_TOTAL_ALL FP_TOTAL_time CoP_A_X CoP_A_Y CoP_B_X CoP_B_Y;
-            [filename,path] = uigetfile('*.txt');  
+            global signals WIDTH_FP LENGTH_FP FP_A_time FP_A_0 FP_A_1 FP_A_2 FP_A_3 FP_B_time FP_B_0 FP_B_1 FP_B_2 FP_B_3 FP_A_TOTAL FP_B_TOTAL FP_TOTAL_ALL FP_TOTAL_time CoP_A_X CoP_A_Y CoP_B_X CoP_B_Y CoP_TOTAL_X CoP_TOTAL_Y;
+            [filename,path] = uigetfile('*.txt');
+            % Improved loading from files with it's full filepath so it doesn't crash ocassionally
             filepath = strcat(path,filename);     
             fID = fopen(filepath);
             datacell = textscan(fID,'%f%f%f%f%f%f%f%f%f%f%f%f', 'HeaderLines', 3, 'CollectOutput', 1);
@@ -73,6 +78,8 @@ classdef forceplate_main < matlab.apps.AppBase
             CoP_A_Y = (LENGTH_FP/2).*((FP_A_0 + FP_A_1 - FP_A_2 - FP_A_3)./FP_A_TOTAL);
             CoP_B_X = (WIDTH_FP/2).*((FP_B_1 + FP_B_2 - FP_B_1 - FP_B_3)./FP_B_TOTAL);
             CoP_B_Y = (LENGTH_FP/2).*((FP_B_0 + FP_B_1 - FP_B_2 - FP_B_3)./FP_B_TOTAL);
+            CoP_TOTAL_X = CoP_A_X + CoP_B_X;
+            CoP_TOTAL_Y = CoP_A_Y + CoP_B_Y;
             
             % Summing both forceplates
             FP_TOTAL_ALL = FP_A_TOTAL + FP_B_TOTAL;
@@ -123,6 +130,11 @@ classdef forceplate_main < matlab.apps.AppBase
            
             hold(app.UIAxesCoP2, "off");
             plot(app.UIAxesCoP2,CoP_B_X, CoP_B_Y);
+            xlabel(app.UIAxesCoP2, "X[mm]");
+            ylabel(app.UIAxesCoP2, "Y[mm]");
+            
+            hold(app.UIAxesCoP3, "off");
+            plot(app.UIAxesCoP3, CoP_TOTAL_X, CoP_TOTAL_Y);
             xlabel(app.UIAxesCoP2, "X[mm]");
             ylabel(app.UIAxesCoP2, "Y[mm]");
             
@@ -395,6 +407,7 @@ classdef forceplate_main < matlab.apps.AppBase
             FP_B_2 = signals(:,11)*C/(FP_B_Vfs2*(2^nbits - 1));
             FP_B_3 = signals(:,12)*C/(FP_B_Vfs3*(2^nbits - 1));
             FP_B_TOTAL = FP_B_0 + FP_B_1 + FP_B_2 + FP_B_3;
+            
             CoP_B_X = (WIDTH_FP/2).*((FP_B_1 + FP_B_2 - FP_B_1 - FP_B_3)./FP_B_TOTAL);
             CoP_B_Y = (LENGTH_FP/2).*((FP_B_0 + FP_B_1 - FP_B_2 - FP_B_3)./FP_B_TOTAL); 
                         
@@ -413,6 +426,111 @@ classdef forceplate_main < matlab.apps.AppBase
             xlabel(app.UIAxesCoP2, "X[mm]");
             ylabel(app.UIAxesCoP2, "Y[mm]");
             
+            DataselectDropDownValueChanged(app);
+            CalculatepeaksButtonPushed(app);
+        end
+
+        % Button pushed function: SmoothTOTALButton
+        function SmoothTOTALButtonPushed(app, event)
+            global FP_A_0 FP_A_1 FP_A_2 FP_A_3 FP_B_0 FP_B_1 FP_B_2 FP_B_3 FP_A_TOTAL FP_B_TOTAL CoP_A_X CoP_A_Y CoP_B_X CoP_B_Y CoP_TOTAL_X CoP_TOTAL_Y WIDTH_FP LENGTH_FP FP_TOTAL_ALL
+            FP_TOTAL_ALL = smoothdata(FP_TOTAL_ALL);
+            FP_A_TOTAL = smoothdata(FP_A_TOTAL);
+            FP_B_TOTAL = smoothdata(FP_B_TOTAL);
+            ColumnselectTOTALDropDownValueChanged(app);
+            CoP_A_X = (WIDTH_FP/2).*((FP_A_1 + FP_A_2 - FP_A_1 - FP_A_3)./FP_A_TOTAL);
+            CoP_A_Y = (LENGTH_FP/2).*((FP_A_0 + FP_A_1 - FP_A_2 - FP_A_3)./FP_A_TOTAL);
+            CoP_B_X = (WIDTH_FP/2).*((FP_B_1 + FP_B_2 - FP_B_1 - FP_B_3)./FP_B_TOTAL);
+            CoP_B_Y = (LENGTH_FP/2).*((FP_B_0 + FP_B_1 - FP_B_2 - FP_B_3)./FP_B_TOTAL);
+            CoP_TOTAL_X = CoP_A_X + CoP_B_X;
+            CoP_TOTAL_Y = CoP_A_Y + CoP_B_Y;
+            plot(app.UIAxesCoP3,CoP_TOTAL_X, CoP_TOTAL_Y);
+        end
+
+        % Value changed function: ColumnselectTOTALDropDown
+        function ColumnselectTOTALDropDownValueChanged(app, event)
+            global FP_A_TOTAL FP_B_TOTAL FP_TOTAL_ALL FP_TOTAL_time;
+            
+            value = app.ColumnselectTOTALDropDown.Value;
+
+            switch value
+                case '1'
+                    hold(app.UIAxes3, "off");
+                    plot(app.UIAxes3,FP_TOTAL_time, FP_A_TOTAL);
+                    legend(app.UIAxes3,"FP_A TOTAL");
+                case '2'
+                    hold(app.UIAxes3, "off");
+                    plot(app.UIAxes3,FP_TOTAL_time, FP_B_TOTAL);
+                    legend(app.UIAxes3,"FP_B TOTAL");
+                case '1-2'
+                    hold(app.UIAxes3, "off");
+                    plot(app.UIAxes3,FP_TOTAL_time, FP_A_TOTAL);
+                    hold(app.UIAxes3, "on");
+                    plot(app.UIAxes3,FP_TOTAL_time, FP_B_TOTAL);
+                    legend(app.UIAxes3,"FP_A", "FP_B");
+                case 'SUM'
+                    hold(app.UIAxes3, "off");
+                    plot(app.UIAxes3,FP_TOTAL_time, FP_TOTAL_ALL);
+                    legend(app.UIAxes3,"FP_B TOTAL");
+                case 'ALL'
+                    hold(app.UIAxes3, "off");
+                    plot(app.UIAxes3,FP_TOTAL_time, FP_A_TOTAL);
+                    hold(app.UIAxes3, "on");
+                    plot(app.UIAxes3,FP_TOTAL_time, FP_B_TOTAL);
+                    plot(app.UIAxes3,FP_TOTAL_time, FP_TOTAL_ALL);
+                    legend(app.UIAxes3,"FP_A", "FP_B", "FP TOTAL");
+                otherwise
+            end
+        end
+
+        % Button pushed function: ResetdataTOTALButton
+        function ResetdataTOTALButtonPushed(app, event)
+            global FP_A_time FP_A_0 FP_A_1 FP_A_2 FP_A_3 FP_A_TOTAL CoP_A_X CoP_A_Y FP_B_time FP_B_0 FP_B_1 FP_B_2 FP_B_3 FP_B_TOTAL CoP_B_X CoP_B_Y FP_TOTAL_ALL CoP_TOTAL_X CoP_TOTAL_Y FP_TOTAL_time signals WIDTH_FP LENGTH_FP;
+            
+            C = 406.831;
+            nbits = 16;
+            
+            FP_A_Vfs0 = 2.00058;
+            FP_A_Vfs1 = 2.00046;
+            FP_A_Vfs2 = 2.00067;
+            FP_A_Vfs3 = 2.00086;
+            
+            FP_B_Vfs0 = 1.99959;
+            FP_B_Vfs1 = 1.99998;
+            FP_B_Vfs2 = 1.99995;
+            FP_B_Vfs3 = 1.99992;
+            
+            FP_A_time = signals(:,1);
+            FP_A_0 = signals(:,3)*C/(FP_A_Vfs0*(2^nbits - 1));
+            FP_A_1 = signals(:,4)*C/(FP_A_Vfs1*(2^nbits - 1));
+            FP_A_2 = signals(:,5)*C/(FP_A_Vfs2*(2^nbits - 1));
+            FP_A_3 = signals(:,6)*C/(FP_A_Vfs3*(2^nbits - 1));
+            FP_A_TOTAL = FP_A_0 + FP_A_1 + FP_A_2 + FP_A_3;
+            
+            FP_B_time = signals(:,7);
+            FP_B_0 = signals(:,9)*C/(FP_B_Vfs0*(2^nbits - 1));
+            FP_B_1 = signals(:,10)*C/(FP_B_Vfs1*(2^nbits - 1));
+            FP_B_2 = signals(:,11)*C/(FP_B_Vfs2*(2^nbits - 1));
+            FP_B_3 = signals(:,12)*C/(FP_B_Vfs3*(2^nbits - 1));
+            FP_B_TOTAL = FP_B_0 + FP_B_1 + FP_B_2 + FP_B_3;
+            
+            CoP_A_X = (WIDTH_FP/2).*((FP_A_1 + FP_A_2 - FP_A_1 - FP_A_3)./FP_A_TOTAL);
+            CoP_A_Y = (LENGTH_FP/2).*((FP_A_0 + FP_A_1 - FP_A_2 - FP_A_3)./FP_A_TOTAL);
+            CoP_B_X = (WIDTH_FP/2).*((FP_B_1 + FP_B_2 - FP_B_1 - FP_B_3)./FP_B_TOTAL);
+            CoP_B_Y = (LENGTH_FP/2).*((FP_B_0 + FP_B_1 - FP_B_2 - FP_B_3)./FP_B_TOTAL);
+            
+            hold(app.UIAxes3, "off");
+            plot(app.UIAxes3,FP_TOTAL_time, FP_A_TOTAL);
+            hold(app.UIAxes3, "on");
+            plot(app.UIAxes3,FP_TOTAL_time, FP_B_TOTAL);
+            plot(app.UIAxes3,FP_TOTAL_time, FP_TOTAL_ALL);
+            xlabel(app.UIAxes3, "time[datapoints]");
+            ylabel(app.UIAxes3, "weight [kgf]");
+            legend(app.UIAxes3,"FP_A", "FP_B", "FP TOTAL");
+            
+            plot(app.UIAxesCoP3,CoP_TOTAL_X, CoP_TOTAL_Y);
+            xlabel(app.UIAxesCoP3, "X[mm]");
+            ylabel(app.UIAxesCoP3, "Y[mm]"); 
+
             DataselectDropDownValueChanged(app);
             CalculatepeaksButtonPushed(app);
         end
@@ -490,13 +608,13 @@ classdef forceplate_main < matlab.apps.AppBase
             % Create SmoothAButton
             app.SmoothAButton = uibutton(app.Forceplates1and2Tab, 'push');
             app.SmoothAButton.ButtonPushedFcn = createCallbackFcn(app, @SmoothAButtonPushed, true);
-            app.SmoothAButton.Position = [276 456 100 22];
+            app.SmoothAButton.Position = [276 452 100 22];
             app.SmoothAButton.Text = 'Smooth A';
 
             % Create ResetdataAButton
             app.ResetdataAButton = uibutton(app.Forceplates1and2Tab, 'push');
             app.ResetdataAButton.ButtonPushedFcn = createCallbackFcn(app, @ResetdataAButtonPushed, true);
-            app.ResetdataAButton.Position = [133 419 100 22];
+            app.ResetdataAButton.Position = [133 415 100 22];
             app.ResetdataAButton.Text = 'Reset data A';
 
             % Create SmoothBButton
@@ -525,14 +643,14 @@ classdef forceplate_main < matlab.apps.AppBase
             % Create ColumnselectADropDownLabel
             app.ColumnselectADropDownLabel = uilabel(app.Forceplates1and2Tab);
             app.ColumnselectADropDownLabel.HorizontalAlignment = 'right';
-            app.ColumnselectADropDownLabel.Position = [25 456 93 22];
+            app.ColumnselectADropDownLabel.Position = [25 452 93 22];
             app.ColumnselectADropDownLabel.Text = 'Column select A';
 
             % Create ColumnselectADropDown
             app.ColumnselectADropDown = uidropdown(app.Forceplates1and2Tab);
             app.ColumnselectADropDown.Items = {'1', '2', '3', '4', '1-4', 'SUM', 'ALL'};
             app.ColumnselectADropDown.ValueChangedFcn = createCallbackFcn(app, @ColumnselectADropDownValueChanged, true);
-            app.ColumnselectADropDown.Position = [133 456 100 22];
+            app.ColumnselectADropDown.Position = [133 452 100 22];
             app.ColumnselectADropDown.Value = 'ALL';
 
             % Create ColumnselectBDropDownLabel
@@ -565,6 +683,31 @@ classdef forceplate_main < matlab.apps.AppBase
             xlabel(app.UIAxesCoP3, 'X')
             ylabel(app.UIAxesCoP3, 'Y')
             app.UIAxesCoP3.Position = [738 474 342 341];
+
+            % Create SmoothTOTALButton
+            app.SmoothTOTALButton = uibutton(app.SummedForceplatesTab, 'push');
+            app.SmoothTOTALButton.ButtonPushedFcn = createCallbackFcn(app, @SmoothTOTALButtonPushed, true);
+            app.SmoothTOTALButton.Position = [320 438 100 22];
+            app.SmoothTOTALButton.Text = 'Smooth TOTAL';
+
+            % Create ResetdataTOTALButton
+            app.ResetdataTOTALButton = uibutton(app.SummedForceplatesTab, 'push');
+            app.ResetdataTOTALButton.ButtonPushedFcn = createCallbackFcn(app, @ResetdataTOTALButtonPushed, true);
+            app.ResetdataTOTALButton.Position = [175 401 114 22];
+            app.ResetdataTOTALButton.Text = 'Reset data TOTAL';
+
+            % Create ColumnselectTOTALDropDownLabel
+            app.ColumnselectTOTALDropDownLabel = uilabel(app.SummedForceplatesTab);
+            app.ColumnselectTOTALDropDownLabel.HorizontalAlignment = 'right';
+            app.ColumnselectTOTALDropDownLabel.Position = [38 438 122 22];
+            app.ColumnselectTOTALDropDownLabel.Text = 'Column select TOTAL';
+
+            % Create ColumnselectTOTALDropDown
+            app.ColumnselectTOTALDropDown = uidropdown(app.SummedForceplatesTab);
+            app.ColumnselectTOTALDropDown.Items = {'1', '2', '1-2', 'SUM', 'ALL'};
+            app.ColumnselectTOTALDropDown.ValueChangedFcn = createCallbackFcn(app, @ColumnselectTOTALDropDownValueChanged, true);
+            app.ColumnselectTOTALDropDown.Position = [175 438 114 22];
+            app.ColumnselectTOTALDropDown.Value = 'ALL';
 
             % Create DataselectDropDownLabel
             app.DataselectDropDownLabel = uilabel(app.ForceplateProcessingtoolUIFigure);
