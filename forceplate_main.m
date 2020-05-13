@@ -17,8 +17,6 @@ classdef forceplate_main < matlab.apps.AppBase
         ResetdataAButton                matlab.ui.control.Button
         SmoothBButton                   matlab.ui.control.Button
         ResetdataBButton                matlab.ui.control.Button
-        SliderLabel                     matlab.ui.control.Label
-        Slider                          matlab.ui.control.Slider
         ColumnselectADropDownLabel      matlab.ui.control.Label
         ColumnselectADropDown           matlab.ui.control.DropDown
         ColumnselectBDropDownLabel      matlab.ui.control.Label
@@ -788,17 +786,6 @@ classdef forceplate_main < matlab.apps.AppBase
             app.ResetdataBButton.Position = [133 15 100 22];
             app.ResetdataBButton.Text = 'Reset data B';
 
-            % Create SliderLabel
-            app.SliderLabel = uilabel(app.Forceplates1and2Tab);
-            app.SliderLabel.HorizontalAlignment = 'right';
-            app.SliderLabel.Position = [442 456 36 22];
-            app.SliderLabel.Text = 'Slider';
-
-            % Create Slider
-            app.Slider = uislider(app.Forceplates1and2Tab);
-            app.Slider.MajorTicks = [0 200 400 600 800 1000 1200 1400];
-            app.Slider.Position = [487 465 162 3];
-
             % Create ColumnselectADropDownLabel
             app.ColumnselectADropDownLabel = uilabel(app.Forceplates1and2Tab);
             app.ColumnselectADropDownLabel.HorizontalAlignment = 'right';
@@ -880,47 +867,59 @@ classdef forceplate_main < matlab.apps.AppBase
             app.DataselectDropDown.ValueChangedFcn = createCallbackFcn(app, @DataselectDropDownValueChanged, true);
             app.DataselectDropDown.Position = [1217 810 100 22];
             app.DataselectDropDown.Value = 'A0';
+          
+            % Create TresholdASliderLabel
+            app.TresholdASliderLabel = uilabel(app.Forceplates1and2Tab);
+            app.TresholdASliderLabel.HorizontalAlignment = 'right';
+            app.TresholdASliderLabel.Position = [473 471 63 22];
+            app.TresholdASliderLabel.Text = 'Treshold A';
 
-            % Create CalculatepeaksButton
-            app.CalculatepeaksButton = uibutton(app.ForceplateProcessingtoolUIFigure, 'push');
-            app.CalculatepeaksButton.ButtonPushedFcn = createCallbackFcn(app, @CalculatepeaksButtonPushed, true);
-            app.CalculatepeaksButton.Position = [1131 692 178 22];
-            app.CalculatepeaksButton.Text = 'Calculate peaks';
+            % Create TresholdASlider
+            app.TresholdASlider = uislider(app.Forceplates1and2Tab);
+            app.TresholdASlider.Limits = [0 300];
+            app.TresholdASlider.MajorTicks = [0 50 100 150 200 250 300];
+            app.TresholdASlider.ValueChangedFcn = createCallbackFcn(app, @TresholdASliderValueChanged, true);
+            app.TresholdASlider.Position = [547 490 162 3];
+            app.TresholdASlider.Value = 150;
 
-            % Create SmoothAButton
-            app.SmoothAButton = uibutton(app.ForceplateProcessingtoolUIFigure, 'push');
-            app.SmoothAButton.ButtonPushedFcn = createCallbackFcn(app, @SmoothAButtonPushed, true);
-            app.SmoothAButton.Position = [294 414 100 22];
-            app.SmoothAButton.Text = 'Smooth A';
+            % Create TresholdBSliderLabel
+            app.TresholdBSliderLabel = uilabel(app.Forceplates1and2Tab);
+            app.TresholdBSliderLabel.HorizontalAlignment = 'right';
+            app.TresholdBSliderLabel.Position = [473 434 63 22];
+            app.TresholdBSliderLabel.Text = 'Treshold B';
 
-            % Create SmoothBButton
-            app.SmoothBButton = uibutton(app.ForceplateProcessingtoolUIFigure, 'push');
-            app.SmoothBButton.ButtonPushedFcn = createCallbackFcn(app, @SmoothBButtonPushed, true);
-            app.SmoothBButton.Position = [294 31 100 22];
-            app.SmoothBButton.Text = 'Smooth B';
+            % Create TresholdBSlider
+            app.TresholdBSlider = uislider(app.Forceplates1and2Tab);
+            app.TresholdBSlider.Limits = [0 300];
+            app.TresholdBSlider.ValueChangedFcn = createCallbackFcn(app, @TresholdBSliderValueChanged, true);
+            app.TresholdBSlider.Position = [547 448 162 3];
+            app.TresholdBSlider.Value = 20;
 
-            % Create ResetdataAButton
-            app.ResetdataAButton = uibutton(app.ForceplateProcessingtoolUIFigure, 'push');
-            app.ResetdataAButton.ButtonPushedFcn = createCallbackFcn(app, @ResetdataAButtonPushed, true);
-            app.ResetdataAButton.Position = [151 388 100 22];
-            app.ResetdataAButton.Text = 'Reset data A';
+            % Create TresholdALabel
+            app.TresholdALabel = uilabel(app.Forceplates1and2Tab);
+            app.TresholdALabel.HorizontalAlignment = 'right';
+            app.TresholdALabel.Position = [492 72 63 22];
+            app.TresholdALabel.Text = 'Treshold A';
 
-            % Create ResetdataBButton
-            app.ResetdataBButton = uibutton(app.ForceplateProcessingtoolUIFigure, 'push');
-            app.ResetdataBButton.ButtonPushedFcn = createCallbackFcn(app, @ResetdataBButtonPushed, true);
-            app.ResetdataBButton.Position = [151 3 100 22];
-            app.ResetdataBButton.Text = 'Reset data B';
+            % Create TresholdASlider_2
+            app.TresholdASlider_2 = uislider(app.Forceplates1and2Tab);
+            app.TresholdASlider_2.Limits = [0 300];
+            app.TresholdASlider_2.ValueChangedFcn = createCallbackFcn(app, @TresholdASlider_2ValueChanged, true);
+            app.TresholdASlider_2.Position = [576 81 150 3];
+            app.TresholdASlider_2.Value = 150;
 
-            % Create SliderLabel
-            app.SliderLabel = uilabel(app.ForceplateProcessingtoolUIFigure);
-            app.SliderLabel.HorizontalAlignment = 'right';
-            app.SliderLabel.Position = [467 414 36 22];
-            app.SliderLabel.Text = 'Slider';
-
-            % Create Slider
-            app.Slider = uislider(app.ForceplateProcessingtoolUIFigure);
-            app.Slider.MajorTicks = [0 200 400 600 800 1000 1200 1400];
-            app.Slider.Position = [512 423 162 3];
+            % Create TresholdBSlider_2Label
+            app.TresholdBSlider_2Label = uilabel(app.Forceplates1and2Tab);
+            app.TresholdBSlider_2Label.HorizontalAlignment = 'right';
+            app.TresholdBSlider_2Label.Position = [493 30 63 22];
+            app.TresholdBSlider_2Label.Text = 'Treshold B';
+            
+            % Create TresholdBSlider_2
+            app.TresholdBSlider_2 = uislider(app.Forceplates1and2Tab);
+            app.TresholdBSlider_2.Limits = [0 300];
+            app.TresholdBSlider_2.ValueChangedFcn = createCallbackFcn(app, @TresholdBSlider_2ValueChanged, true);
+            app.TresholdBSlider_2.Position = [577 39 150 3];
+            app.TresholdBSlider_2.Value = 20;
 
             % Show the figure after all components are created
             app.ForceplateProcessingtoolUIFigure.Visible = 'on';
