@@ -21,14 +21,6 @@ classdef forceplate_main < matlab.apps.AppBase
         ColumnselectADropDown           matlab.ui.control.DropDown
         ColumnselectBDropDownLabel      matlab.ui.control.Label
         ColumnselectBDropDown           matlab.ui.control.DropDown
-        TresholdASliderLabel            matlab.ui.control.Label
-        TresholdASlider                 matlab.ui.control.Slider
-        TresholdBSliderLabel            matlab.ui.control.Label
-        TresholdBSlider                 matlab.ui.control.Slider
-        TresholdASlider_2Label          matlab.ui.control.Label
-        TresholdASlider_2               matlab.ui.control.Slider
-        TresholdBSlider_2Label          matlab.ui.control.Label
-        TresholdBSlider_2               matlab.ui.control.Slider
         SummedForceplatesTab            matlab.ui.container.Tab
         UIAxes3                         matlab.ui.control.UIAxes
         UIAxesCoP3                      matlab.ui.control.UIAxes
@@ -36,15 +28,24 @@ classdef forceplate_main < matlab.apps.AppBase
         ResetdataTOTALButton            matlab.ui.control.Button
         ColumnselectTOTALDropDownLabel  matlab.ui.control.Label
         ColumnselectTOTALDropDown       matlab.ui.control.DropDown
-        TresholdASlider_3Label          matlab.ui.control.Label
-        TresholdASlider_3               matlab.ui.control.Slider
-        TresholdBSlider_3Label          matlab.ui.control.Label
-        TresholdBSlider_3               matlab.ui.control.Slider
         DataselectDropDownLabel         matlab.ui.control.Label
         DataselectDropDown              matlab.ui.control.DropDown
+        TresholdASliderLabel        matlab.ui.control.Label
+        TresholdASlider             matlab.ui.control.Slider
+        TresholdBSliderLabel        matlab.ui.control.Label
+        TresholdBSlider             matlab.ui.control.Slider
+        TresholdALabel              matlab.ui.control.Label
+        TresholdASlider_2           matlab.ui.control.Slider
+        TresholdBSlider_2Label      matlab.ui.control.Label
+        TresholdBSlider_2           matlab.ui.control.Slider
     end
 
-   
+    %Hallo ik ben berk
+    %hey ik ben bas
+    methods (Access = private)
+        
+    end
+    
 
     % Callbacks that handle component events
     methods (Access = private)
@@ -52,13 +53,14 @@ classdef forceplate_main < matlab.apps.AppBase
         % Menu selected function: LoadfileMenu
         function LoadfileMenuSelected(app, event)
             global signals WIDTH_FP LENGTH_FP FP_A_time FP_A_0 FP_A_1 FP_A_2 FP_A_3 FP_B_time FP_B_0 FP_B_1 FP_B_2 FP_B_3 FP_A_TOTAL FP_B_TOTAL FP_TOTAL_ALL FP_TOTAL_time CoP_A_X CoP_A_Y CoP_B_X CoP_B_Y CoP_TOTAL_X CoP_TOTAL_Y;
+            %%%%%%BERK%%%%%%%%%%%%
             global Baseline1 constTresholdA constTresholdB tresholdA tresholdB numRows;
             global Baseline2 tresholdA2 tresholdB2 constTresholdB2 constTresholdA2 numRows2;
-            global Baseline3 tresholdtotalA tresholdtotalB constTresholdtotalA constTresholdtotalB numRows3;
+            %%%%%%%%%%%%%%%%%%%%%%%
             [filename,path] = uigetfile('*.txt');
+            figure(app.ForceplateProcessingtoolUIFigure);           % bring ui back to foreground
             % Improved loading from files with it's full filepath so it doesn't crash ocassionally
             filepath = strcat(path,filename);     
-            figure(app.ForceplateProcessingtoolUIFigure);
             fID = fopen(filepath);
             datacell = textscan(fID,'%f%f%f%f%f%f%f%f%f%f%f%f', 'HeaderLines', 3, 'CollectOutput', 1);
             fclose(fID);
@@ -133,10 +135,10 @@ classdef forceplate_main < matlab.apps.AppBase
             constTresholdB2 = app.TresholdBSlider_2.Value;
             tresholdB2 = zeros(1, numRows2) + constTresholdB2;
             
-            CoP_A_X = (WIDTH_FP/2).*((FP_A_1 + FP_A_2 - FP_A_1 - FP_A_3)./FPA_TOTAL);
-            CoP_A_Y = (LENGTH_FP/2).*((FP_A_0 + FP_A_1 - FP_A_2 - FP_A_3)./FPA_TOTAL);
-            CoP_B_X = (WIDTH_FP/2).*((FP_B_1 + FP_B_2 - FP_B_1 - FP_B_3)./FPB_TOTAL);
-            CoP_B_Y = (LENGTH_FP/2).*((FP_B_0 + FP_B_1 - FP_B_2 - FP_B_3)./FPB_TOTAL);
+            CoP_A_X = (WIDTH_FP/2).*((FP_A_1 + FP_A_2 - FP_A_1 - FP_A_3)./FP_A_TOTAL);
+            CoP_A_Y = (LENGTH_FP/2).*((FP_A_0 + FP_A_1 - FP_A_2 - FP_A_3)./FP_A_TOTAL);
+            CoP_B_X = (WIDTH_FP/2).*((FP_B_1 + FP_B_2 - FP_B_1 - FP_B_3)./FP_B_TOTAL);
+            CoP_B_Y = (LENGTH_FP/2).*((FP_B_0 + FP_B_1 - FP_B_2 - FP_B_3)./FP_B_TOTAL);
             CoP_TOTAL_X = CoP_A_X + CoP_B_X;
             CoP_TOTAL_Y = CoP_A_Y + CoP_B_Y;
             
@@ -147,16 +149,6 @@ classdef forceplate_main < matlab.apps.AppBase
             elseif FP_B_time(1) == 0
                 FP_TOTAL_time = FP_B_time;
             end
-            
-            %Variable tresholds total
-            [numRows3,numCols3] = size(FP_TOTAL_time);
-            baselineConst3 = polyfit(FP_TOTAL_time,FP_TOTAL_ALL,0);
-            Baseline3 = zeros(1, numRows3) + baselineConst3;
-            
-            constTresholdtotalA = app.TresholdASlider_3.Value;
-            tresholdtotalA = zeros(1, numRows2) + constTresholdtotalA;
-            constTresholdtotalB = app.TresholdBSlider_3.Value;
-            tresholdtotalB = zeros(1, numRows2) + constTresholdtotalB;        
             
             % Plot FP1 graph
             hold(app.UIAxes, "off");
@@ -196,13 +188,9 @@ classdef forceplate_main < matlab.apps.AppBase
             hold(app.UIAxes3, "on");
             plot(app.UIAxes3, FP_TOTAL_time, FP_B_TOTAL);
             plot(app.UIAxes3, FP_TOTAL_time, FP_TOTAL_ALL);
-            plot(app.UIAxes3,FP_TOTAL_time, Baseline3);
-            plot(app.UIAxes3,FP_TOTAL_time, tresholdtotalA);
-            plot(app.UIAxes3,FP_TOTAL_time, tresholdtotalB);
-            
             xlabel(app.UIAxes3, "time [datapoints]");
             ylabel(app.UIAxes3, "weight [kgf]");
-            legend(app.UIAxes3,"FP_A TOTAL", "FP_B TOTAL", "FP TOTAL SUM", "Treshold A", "Treshold B");
+            legend(app.UIAxes3,"FP_A TOTAL", "FP_B TOTAL", "FP TOTAL SUM");
             
             hold(app.UIAxesCoP1, "off");
             plot(app.UIAxesCoP1,CoP_A_X, CoP_A_Y);
@@ -706,22 +694,109 @@ classdef forceplate_main < matlab.apps.AppBase
             ColumnselectBDropDownValueChanged(app, event);
         end
 
-        % Value changed function: TresholdASlider_3
-        function TresholdASlider_3ValueChanged(app, event)
-            global tresholdtotalA numRows3
-            slidervalue = app.TresholdASlider_3.Value;
-            tresholdtotalA = zeros(1,numRows3) + slidervalue;
-            
-            ColumnselectTOTALDropDownValueChanged(app, event);
+        % Button pushed function: SmoothTOTALButton
+        function SmoothTOTALButtonPushed(app, event)
+            global FP_A_0 FP_A_1 FP_A_2 FP_A_3 FP_B_0 FP_B_1 FP_B_2 FP_B_3 FP_A_TOTAL FP_B_TOTAL CoP_A_X CoP_A_Y CoP_B_X CoP_B_Y CoP_TOTAL_X CoP_TOTAL_Y WIDTH_FP LENGTH_FP FP_TOTAL_ALL
+            FP_TOTAL_ALL = smoothdata(FP_TOTAL_ALL);
+            FP_A_TOTAL = smoothdata(FP_A_TOTAL);
+            FP_B_TOTAL = smoothdata(FP_B_TOTAL);
+            ColumnselectTOTALDropDownValueChanged(app);
+            CoP_A_X = (WIDTH_FP/2).*((FP_A_1 + FP_A_2 - FP_A_1 - FP_A_3)./FP_A_TOTAL);
+            CoP_A_Y = (LENGTH_FP/2).*((FP_A_0 + FP_A_1 - FP_A_2 - FP_A_3)./FP_A_TOTAL);
+            CoP_B_X = (WIDTH_FP/2).*((FP_B_1 + FP_B_2 - FP_B_1 - FP_B_3)./FP_B_TOTAL);
+            CoP_B_Y = (LENGTH_FP/2).*((FP_B_0 + FP_B_1 - FP_B_2 - FP_B_3)./FP_B_TOTAL);
+            CoP_TOTAL_X = CoP_A_X + CoP_B_X;
+            CoP_TOTAL_Y = CoP_A_Y + CoP_B_Y;
+            plot(app.UIAxesCoP3,CoP_TOTAL_X, CoP_TOTAL_Y);
         end
 
-        % Value changed function: TresholdBSlider_3
-        function TresholdBSlider_3ValueChanged(app, event)
-            global tresholdtotalB numRows3
-            slidervalue = app.TresholdBSlider_3.Value;
-            tresholdtotalB = zeros(1,numRows3) + slidervalue;
+        % Value changed function: ColumnselectTOTALDropDown
+        function ColumnselectTOTALDropDownValueChanged(app, event)
+            global FP_A_TOTAL FP_B_TOTAL FP_TOTAL_ALL FP_TOTAL_time;
             
-            ColumnselectTOTALDropDownValueChanged(app, event);
+            value = app.ColumnselectTOTALDropDown.Value;
+
+            switch value
+                case '1'
+                    hold(app.UIAxes3, "off");
+                    plot(app.UIAxes3,FP_TOTAL_time, FP_A_TOTAL);
+                    legend(app.UIAxes3,"FP_A TOTAL");
+                case '2'
+                    hold(app.UIAxes3, "off");
+                    plot(app.UIAxes3,FP_TOTAL_time, FP_B_TOTAL);
+                    legend(app.UIAxes3,"FP_B TOTAL");
+                case '1-2'
+                    hold(app.UIAxes3, "off");
+                    plot(app.UIAxes3,FP_TOTAL_time, FP_A_TOTAL);
+                    hold(app.UIAxes3, "on");
+                    plot(app.UIAxes3,FP_TOTAL_time, FP_B_TOTAL);
+                    legend(app.UIAxes3,"FP_A", "FP_B");
+                case 'SUM'
+                    hold(app.UIAxes3, "off");
+                    plot(app.UIAxes3,FP_TOTAL_time, FP_TOTAL_ALL);
+                    legend(app.UIAxes3,"FP_B TOTAL");
+                case 'ALL'
+                    hold(app.UIAxes3, "off");
+                    plot(app.UIAxes3,FP_TOTAL_time, FP_A_TOTAL);
+                    hold(app.UIAxes3, "on");
+                    plot(app.UIAxes3,FP_TOTAL_time, FP_B_TOTAL);
+                    plot(app.UIAxes3,FP_TOTAL_time, FP_TOTAL_ALL);
+                    legend(app.UIAxes3,"FP_A", "FP_B", "FP TOTAL");
+                otherwise
+            end
+        end
+
+        % Button pushed function: ResetdataTOTALButton
+        function ResetdataTOTALButtonPushed(app, event)
+            global FP_A_time FP_A_0 FP_A_1 FP_A_2 FP_A_3 FP_A_TOTAL CoP_A_X CoP_A_Y FP_B_time FP_B_0 FP_B_1 FP_B_2 FP_B_3 FP_B_TOTAL CoP_B_X CoP_B_Y FP_TOTAL_ALL CoP_TOTAL_X CoP_TOTAL_Y FP_TOTAL_time signals WIDTH_FP LENGTH_FP;
+            
+            C = 406.831;
+            nbits = 16;
+            
+            FP_A_Vfs0 = 2.00058;
+            FP_A_Vfs1 = 2.00046;
+            FP_A_Vfs2 = 2.00067;
+            FP_A_Vfs3 = 2.00086;
+            
+            FP_B_Vfs0 = 1.99959;
+            FP_B_Vfs1 = 1.99998;
+            FP_B_Vfs2 = 1.99995;
+            FP_B_Vfs3 = 1.99992;
+            
+            FP_A_time = signals(:,1);
+            FP_A_0 = signals(:,3)*C/(FP_A_Vfs0*(2^nbits - 1));
+            FP_A_1 = signals(:,4)*C/(FP_A_Vfs1*(2^nbits - 1));
+            FP_A_2 = signals(:,5)*C/(FP_A_Vfs2*(2^nbits - 1));
+            FP_A_3 = signals(:,6)*C/(FP_A_Vfs3*(2^nbits - 1));
+            FP_A_TOTAL = FP_A_0 + FP_A_1 + FP_A_2 + FP_A_3;
+            
+            FP_B_time = signals(:,7);
+            FP_B_0 = signals(:,9)*C/(FP_B_Vfs0*(2^nbits - 1));
+            FP_B_1 = signals(:,10)*C/(FP_B_Vfs1*(2^nbits - 1));
+            FP_B_2 = signals(:,11)*C/(FP_B_Vfs2*(2^nbits - 1));
+            FP_B_3 = signals(:,12)*C/(FP_B_Vfs3*(2^nbits - 1));
+            FP_B_TOTAL = FP_B_0 + FP_B_1 + FP_B_2 + FP_B_3;
+            
+            CoP_A_X = (WIDTH_FP/2).*((FP_A_1 + FP_A_2 - FP_A_1 - FP_A_3)./FP_A_TOTAL);
+            CoP_A_Y = (LENGTH_FP/2).*((FP_A_0 + FP_A_1 - FP_A_2 - FP_A_3)./FP_A_TOTAL);
+            CoP_B_X = (WIDTH_FP/2).*((FP_B_1 + FP_B_2 - FP_B_1 - FP_B_3)./FP_B_TOTAL);
+            CoP_B_Y = (LENGTH_FP/2).*((FP_B_0 + FP_B_1 - FP_B_2 - FP_B_3)./FP_B_TOTAL);
+            
+            hold(app.UIAxes3, "off");
+            plot(app.UIAxes3,FP_TOTAL_time, FP_A_TOTAL);
+            hold(app.UIAxes3, "on");
+            plot(app.UIAxes3,FP_TOTAL_time, FP_B_TOTAL);
+            plot(app.UIAxes3,FP_TOTAL_time, FP_TOTAL_ALL);
+            xlabel(app.UIAxes3, "time[datapoints]");
+            ylabel(app.UIAxes3, "weight [kgf]");
+            legend(app.UIAxes3,"FP_A", "FP_B", "FP TOTAL");
+            
+            plot(app.UIAxesCoP3,CoP_TOTAL_X, CoP_TOTAL_Y);
+            xlabel(app.UIAxesCoP3, "X[mm]");
+            ylabel(app.UIAxesCoP3, "Y[mm]"); 
+
+            DataselectDropDownValueChanged(app);
+            CalculatepeaksButtonPushed(app);
         end
     end
 
@@ -733,7 +808,7 @@ classdef forceplate_main < matlab.apps.AppBase
 
             % Create ForceplateProcessingtoolUIFigure and hide until all components are created
             app.ForceplateProcessingtoolUIFigure = uifigure('Visible', 'off');
-            app.ForceplateProcessingtoolUIFigure.Position = [100 100 1343 955];
+            app.ForceplateProcessingtoolUIFigure.Position = [100 100 1343 856];
             app.ForceplateProcessingtoolUIFigure.Name = 'Forceplate Processing tool';
             app.ForceplateProcessingtoolUIFigure.Scrollable = 'on';
 
@@ -750,17 +825,17 @@ classdef forceplate_main < matlab.apps.AppBase
             app.UITable = uitable(app.ForceplateProcessingtoolUIFigure);
             app.UITable.ColumnName = {'t[s]'; 'F'};
             app.UITable.RowName = {};
-            app.UITable.Position = [1122 212 212 655];
+            app.UITable.Position = [1122 113 212 655];
 
             % Create CalculatepeaksButton
             app.CalculatepeaksButton = uibutton(app.ForceplateProcessingtoolUIFigure, 'push');
             app.CalculatepeaksButton.ButtonPushedFcn = createCallbackFcn(app, @CalculatepeaksButtonPushed, true);
-            app.CalculatepeaksButton.Position = [1139 876 178 22];
+            app.CalculatepeaksButton.Position = [1139 777 178 22];
             app.CalculatepeaksButton.Text = 'Calculate peaks';
 
             % Create TabGroup
             app.TabGroup = uitabgroup(app.ForceplateProcessingtoolUIFigure);
-            app.TabGroup.Position = [12 31 1098 925];
+            app.TabGroup.Position = [12 9 1098 848];
 
             % Create Forceplates1and2Tab
             app.Forceplates1and2Tab = uitab(app.TabGroup);
@@ -771,79 +846,135 @@ classdef forceplate_main < matlab.apps.AppBase
             title(app.UIAxes, 'Forces FP1')
             xlabel(app.UIAxes, 'X')
             ylabel(app.UIAxes, 'Y')
-            app.UIAxes.Position = [1 556 738 337];
+            app.UIAxes.Position = [1 477 738 337];
 
             % Create UIAxesCoP1
             app.UIAxesCoP1 = uiaxes(app.Forceplates1and2Tab);
             title(app.UIAxesCoP1, 'CoP FP1')
             xlabel(app.UIAxesCoP1, 'X')
             ylabel(app.UIAxesCoP1, 'Y')
-            app.UIAxesCoP1.Position = [738 555 342 341];
+            app.UIAxesCoP1.Position = [738 473 342 341];
 
             % Create UIAxes2
             app.UIAxes2 = uiaxes(app.Forceplates1and2Tab);
             title(app.UIAxes2, 'Forces FP2')
             xlabel(app.UIAxes2, 'X')
             ylabel(app.UIAxes2, 'Y')
-            app.UIAxes2.Position = [1 98 738 337];
+            app.UIAxes2.Position = [1 75 738 337];
 
             % Create UIAxesCoP2
             app.UIAxesCoP2 = uiaxes(app.Forceplates1and2Tab);
             title(app.UIAxesCoP2, 'CoP FP2')
             xlabel(app.UIAxesCoP2, 'X')
             ylabel(app.UIAxesCoP2, 'Y')
-            app.UIAxesCoP2.Position = [738 98 342 341];
+            app.UIAxesCoP2.Position = [738 71 342 341];
 
             % Create SmoothAButton
             app.SmoothAButton = uibutton(app.Forceplates1and2Tab, 'push');
             app.SmoothAButton.ButtonPushedFcn = createCallbackFcn(app, @SmoothAButtonPushed, true);
-            app.SmoothAButton.Position = [276 529 100 22];
+            app.SmoothAButton.Position = [276 452 100 22];
             app.SmoothAButton.Text = 'Smooth A';
 
             % Create ResetdataAButton
             app.ResetdataAButton = uibutton(app.Forceplates1and2Tab, 'push');
             app.ResetdataAButton.ButtonPushedFcn = createCallbackFcn(app, @ResetdataAButtonPushed, true);
-            app.ResetdataAButton.Position = [133 492 100 22];
+            app.ResetdataAButton.Position = [133 415 100 22];
             app.ResetdataAButton.Text = 'Reset data A';
 
             % Create SmoothBButton
             app.SmoothBButton = uibutton(app.Forceplates1and2Tab, 'push');
             app.SmoothBButton.ButtonPushedFcn = createCallbackFcn(app, @SmoothBButtonPushed, true);
-            app.SmoothBButton.Position = [276 68 100 22];
+            app.SmoothBButton.Position = [276 50 100 22];
             app.SmoothBButton.Text = 'Smooth B';
 
             % Create ResetdataBButton
             app.ResetdataBButton = uibutton(app.Forceplates1and2Tab, 'push');
             app.ResetdataBButton.ButtonPushedFcn = createCallbackFcn(app, @ResetdataBButtonPushed, true);
-            app.ResetdataBButton.Position = [133 33 100 22];
+            app.ResetdataBButton.Position = [133 15 100 22];
             app.ResetdataBButton.Text = 'Reset data B';
 
             % Create ColumnselectADropDownLabel
             app.ColumnselectADropDownLabel = uilabel(app.Forceplates1and2Tab);
             app.ColumnselectADropDownLabel.HorizontalAlignment = 'right';
-            app.ColumnselectADropDownLabel.Position = [25 529 93 22];
+            app.ColumnselectADropDownLabel.Position = [25 452 93 22];
             app.ColumnselectADropDownLabel.Text = 'Column select A';
 
             % Create ColumnselectADropDown
             app.ColumnselectADropDown = uidropdown(app.Forceplates1and2Tab);
             app.ColumnselectADropDown.Items = {'1', '2', '3', '4', '1-4', 'SUM', 'ALL'};
             app.ColumnselectADropDown.ValueChangedFcn = createCallbackFcn(app, @ColumnselectADropDownValueChanged, true);
-            app.ColumnselectADropDown.Position = [133 529 100 22];
+            app.ColumnselectADropDown.Position = [133 452 100 22];
             app.ColumnselectADropDown.Value = 'ALL';
 
             % Create ColumnselectBDropDownLabel
             app.ColumnselectBDropDownLabel = uilabel(app.Forceplates1and2Tab);
             app.ColumnselectBDropDownLabel.HorizontalAlignment = 'right';
-            app.ColumnselectBDropDownLabel.Position = [25 68 93 22];
+            app.ColumnselectBDropDownLabel.Position = [25 50 93 22];
             app.ColumnselectBDropDownLabel.Text = 'Column select B';
 
             % Create ColumnselectBDropDown
             app.ColumnselectBDropDown = uidropdown(app.Forceplates1and2Tab);
             app.ColumnselectBDropDown.Items = {'1', '2', '3', '4', '1-4', 'SUM', 'ALL'};
             app.ColumnselectBDropDown.ValueChangedFcn = createCallbackFcn(app, @ColumnselectBDropDownValueChanged, true);
-            app.ColumnselectBDropDown.Position = [133 68 100 22];
+            app.ColumnselectBDropDown.Position = [133 50 100 22];
             app.ColumnselectBDropDown.Value = 'ALL';
 
+            % Create SummedForceplatesTab
+            app.SummedForceplatesTab = uitab(app.TabGroup);
+            app.SummedForceplatesTab.Title = 'Summed Forceplates';
+
+            % Create UIAxes3
+            app.UIAxes3 = uiaxes(app.SummedForceplatesTab);
+            title(app.UIAxes3, {'Summed Forces FP1+2'; ''})
+            xlabel(app.UIAxes3, 'X')
+            ylabel(app.UIAxes3, 'Y')
+            app.UIAxes3.Position = [1 477 738 337];
+
+            % Create UIAxesCoP3
+            app.UIAxesCoP3 = uiaxes(app.SummedForceplatesTab);
+            title(app.UIAxesCoP3, 'CoP FP1+2')
+            xlabel(app.UIAxesCoP3, 'X')
+            ylabel(app.UIAxesCoP3, 'Y')
+            app.UIAxesCoP3.Position = [738 474 342 341];
+
+            % Create SmoothTOTALButton
+            app.SmoothTOTALButton = uibutton(app.SummedForceplatesTab, 'push');
+            app.SmoothTOTALButton.ButtonPushedFcn = createCallbackFcn(app, @SmoothTOTALButtonPushed, true);
+            app.SmoothTOTALButton.Position = [320 438 100 22];
+            app.SmoothTOTALButton.Text = 'Smooth TOTAL';
+
+            % Create ResetdataTOTALButton
+            app.ResetdataTOTALButton = uibutton(app.SummedForceplatesTab, 'push');
+            app.ResetdataTOTALButton.ButtonPushedFcn = createCallbackFcn(app, @ResetdataTOTALButtonPushed, true);
+            app.ResetdataTOTALButton.Position = [175 401 114 22];
+            app.ResetdataTOTALButton.Text = 'Reset data TOTAL';
+
+            % Create ColumnselectTOTALDropDownLabel
+            app.ColumnselectTOTALDropDownLabel = uilabel(app.SummedForceplatesTab);
+            app.ColumnselectTOTALDropDownLabel.HorizontalAlignment = 'right';
+            app.ColumnselectTOTALDropDownLabel.Position = [38 438 122 22];
+            app.ColumnselectTOTALDropDownLabel.Text = 'Column select TOTAL';
+
+            % Create ColumnselectTOTALDropDown
+            app.ColumnselectTOTALDropDown = uidropdown(app.SummedForceplatesTab);
+            app.ColumnselectTOTALDropDown.Items = {'1', '2', '1-2', 'SUM', 'ALL'};
+            app.ColumnselectTOTALDropDown.ValueChangedFcn = createCallbackFcn(app, @ColumnselectTOTALDropDownValueChanged, true);
+            app.ColumnselectTOTALDropDown.Position = [175 438 114 22];
+            app.ColumnselectTOTALDropDown.Value = 'ALL';
+
+            % Create DataselectDropDownLabel
+            app.DataselectDropDownLabel = uilabel(app.ForceplateProcessingtoolUIFigure);
+            app.DataselectDropDownLabel.HorizontalAlignment = 'right';
+            app.DataselectDropDownLabel.Position = [1136 810 66 22];
+            app.DataselectDropDownLabel.Text = 'Data select';
+
+            % Create DataselectDropDown
+            app.DataselectDropDown = uidropdown(app.ForceplateProcessingtoolUIFigure);
+            app.DataselectDropDown.Items = {'A0', 'A1', 'A2', 'A3', 'A_SUM', 'A_PEAKS', 'A_VALLEYS', 'B0', 'B1', 'B2', 'B3', 'B_SUM', 'B_PEAKS', 'B_VALLEYS'};
+            app.DataselectDropDown.ValueChangedFcn = createCallbackFcn(app, @DataselectDropDownValueChanged, true);
+            app.DataselectDropDown.Position = [1217 810 100 22];
+            app.DataselectDropDown.Value = 'A0';
+          
             % Create TresholdASliderLabel
             app.TresholdASliderLabel = uilabel(app.Forceplates1and2Tab);
             app.TresholdASliderLabel.HorizontalAlignment = 'right';
@@ -852,7 +983,8 @@ classdef forceplate_main < matlab.apps.AppBase
 
             % Create TresholdASlider
             app.TresholdASlider = uislider(app.Forceplates1and2Tab);
-            app.TresholdASlider.Limits = [0 200];
+            app.TresholdASlider.Limits = [0 300];
+            app.TresholdASlider.MajorTicks = [0 50 100 150 200 250 300];
             app.TresholdASlider.ValueChangedFcn = createCallbackFcn(app, @TresholdASliderValueChanged, true);
             app.TresholdASlider.Position = [541 538 150 3];
             app.TresholdASlider.Value = 150;
@@ -865,20 +997,20 @@ classdef forceplate_main < matlab.apps.AppBase
 
             % Create TresholdBSlider
             app.TresholdBSlider = uislider(app.Forceplates1and2Tab);
-            app.TresholdBSlider.Limits = [0 200];
+            app.TresholdBSlider.Limits = [0 300];
             app.TresholdBSlider.ValueChangedFcn = createCallbackFcn(app, @TresholdBSliderValueChanged, true);
             app.TresholdBSlider.Position = [544 480 150 3];
             app.TresholdBSlider.Value = 20;
 
-            % Create TresholdASlider_2Label
-            app.TresholdASlider_2Label = uilabel(app.Forceplates1and2Tab);
-            app.TresholdASlider_2Label.HorizontalAlignment = 'right';
-            app.TresholdASlider_2Label.Position = [457 75 63 22];
-            app.TresholdASlider_2Label.Text = 'Treshold A';
+            % Create TresholdALabel
+            app.TresholdALabel = uilabel(app.Forceplates1and2Tab);
+            app.TresholdALabel.HorizontalAlignment = 'right';
+            app.TresholdALabel.Position = [492 72 63 22];
+            app.TresholdALabel.Text = 'Treshold A';
 
             % Create TresholdASlider_2
             app.TresholdASlider_2 = uislider(app.Forceplates1and2Tab);
-            app.TresholdASlider_2.Limits = [0 200];
+            app.TresholdASlider_2.Limits = [0 300];
             app.TresholdASlider_2.ValueChangedFcn = createCallbackFcn(app, @TresholdASlider_2ValueChanged, true);
             app.TresholdASlider_2.Position = [541 84 150 3];
             app.TresholdASlider_2.Value = 150;
@@ -888,10 +1020,10 @@ classdef forceplate_main < matlab.apps.AppBase
             app.TresholdBSlider_2Label.HorizontalAlignment = 'right';
             app.TresholdBSlider_2Label.Position = [457 33 63 22];
             app.TresholdBSlider_2Label.Text = 'Treshold B';
-
+            
             % Create TresholdBSlider_2
             app.TresholdBSlider_2 = uislider(app.Forceplates1and2Tab);
-            app.TresholdBSlider_2.Limits = [0 200];
+            app.TresholdBSlider_2.Limits = [0 300];
             app.TresholdBSlider_2.ValueChangedFcn = createCallbackFcn(app, @TresholdBSlider_2ValueChanged, true);
             app.TresholdBSlider_2.Position = [541 42 150 3];
             app.TresholdBSlider_2.Value = 20;
