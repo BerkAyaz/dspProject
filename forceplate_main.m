@@ -388,17 +388,22 @@ classdef forceplate_main < matlab.apps.AppBase
         function CalculatepeaksButtonPushed(app, event)
             global FP_A_time FP_B_time FP_TOTAL_time;
             global FP_A_TOTAL FP_B_TOTAL FP_TOTAL_ALL;
+            global constTresholdA constTresholdB constTresholdB2 constTresholdA2 constTresholdtotalA constTresholdtotalB;
             global FP_A_TOTAL_PEAKS FP_A_TOTAL_PK_LOCS FP_A_TOTAL_VALLEYS FP_A_TOTAL_VL_LOCS FP_A_TOTAL_CHGPTS FP_A_TOTAL_CHGPTS2;
             global FP_B_TOTAL_PEAKS FP_B_TOTAL_PK_LOCS FP_B_TOTAL_VALLEYS FP_B_TOTAL_VL_LOCS FP_B_TOTAL_CHGPTS FP_B_TOTAL_CHGPTS2;
             global FP_TOTAL_ALL_PEAKS FP_TOTAL_ALL_PK_LOCS FP_TOTAL_ALL_VALLEYS FP_TOTAL_ALL_VL_LOCS FP_TOTAL_ALL_CHGPTS FP_TOTAL_ALL_CHGPTS2;
             
             % A
-            [FP_A_TOTAL_PEAKS, FP_A_TOTAL_PK_LOCS] = findpeaks(FP_A_TOTAL, 'MinPeakProminence', 4,'MinPeakDistance', 250);               % peak promincence to filter the peaks by height and width
+            [FP_A_TOTAL_PEAKS, FP_A_TOTAL_PK_LOCS] = findpeaks(FP_A_TOTAL, 'MinPeakProminence', 4,'MinPeakDistance', 250);              % peak promincence to filter the peaks by height and width
+            FP_A_TOTAL_PK_LOCS = FP_A_TOTAL_PK_LOCS(FP_A_TOTAL_PEAKS < constTresholdA);                                                 % make it so only the peaks within the thresholds are drawn
+            FP_A_TOTAL_PEAKS = FP_A_TOTAL_PEAKS(FP_A_TOTAL_PEAKS < constTresholdA);
             FP_A_TOTAL_CHGPTS = findchangepts(FP_A_TOTAL, 'MaxNumChanges', 2, 'Statistic', 'rms');                                      % find the changepts to find the flat part
             FP_A_TOTAL_CHGPTS2 = FP_A_TOTAL_CHGPTS + [10; -5];                                                                          % add vector to fix offset
             invert_A_TOTAL = -FP_A_TOTAL;
             [FP_A_TOTAL_VALLEYS, FP_A_TOTAL_VL_LOCS] = findpeaks(invert_A_TOTAL, 'MinPeakProminence', 4);
             FP_A_TOTAL_VALLEYS = -FP_A_TOTAL_VALLEYS;
+            FP_A_TOTAL_VL_LOCS = FP_A_TOTAL_VL_LOCS(FP_A_TOTAL_VALLEYS > constTresholdB);                                               % make it so only the peaks within the thresholds are drawn
+            FP_A_TOTAL_VALLEYS = FP_A_TOTAL_VALLEYS(FP_A_TOTAL_VALLEYS > constTresholdB);
             FP_A_TOTAL_PK_LOCS = FP_A_TOTAL_PK_LOCS + FP_A_time(1,1);
             FP_A_TOTAL_VL_LOCS = FP_A_TOTAL_VL_LOCS + FP_A_time(1,1);
             plot(app.UIAxes,FP_A_TOTAL_PK_LOCS, FP_A_TOTAL_PEAKS, "Marker",".", "LineStyle","none",'MarkerSize', 12);
@@ -409,11 +414,15 @@ classdef forceplate_main < matlab.apps.AppBase
             
             % B
             [FP_B_TOTAL_PEAKS, FP_B_TOTAL_PK_LOCS] = findpeaks(FP_B_TOTAL, 'MinPeakProminence', 4,'MinPeakDistance', 250);              % peak promincence to filter the peaks by height and width
+            FP_B_TOTAL_PK_LOCS = FP_B_TOTAL_PK_LOCS(FP_B_TOTAL_PEAKS < constTresholdA2);                                                % make it so only the peaks within the thresholds are drawn
+            FP_B_TOTAL_PEAKS = FP_B_TOTAL_PEAKS(FP_B_TOTAL_PEAKS < constTresholdA2);
             FP_B_TOTAL_CHGPTS = findchangepts(FP_B_TOTAL, 'MaxNumChanges', 2, 'Statistic', 'rms');                                      % find the changepts to find the flat part
             FP_B_TOTAL_CHGPTS2 = FP_B_TOTAL_CHGPTS + [10; -5];                                                                          % add vector to fix offset
             invert_B_TOTAL = -FP_B_TOTAL;
             [FP_B_TOTAL_VALLEYS, FP_B_TOTAL_VL_LOCS] = findpeaks(invert_B_TOTAL, 'MinPeakProminence', 4);
             FP_B_TOTAL_VALLEYS = -FP_B_TOTAL_VALLEYS;
+            FP_B_TOTAL_VL_LOCS = FP_B_TOTAL_VL_LOCS(FP_B_TOTAL_VALLEYS > constTresholdB2);                                              % make it so only the peaks within the thresholds are drawn
+            FP_B_TOTAL_VALLEYS = FP_B_TOTAL_VALLEYS(FP_B_TOTAL_VALLEYS > constTresholdB2);
             FP_B_TOTAL_PK_LOCS = FP_B_TOTAL_PK_LOCS + FP_B_time(1,1);
             FP_B_TOTAL_VL_LOCS = FP_B_TOTAL_VL_LOCS + FP_B_time(1,1);
             legend(app.UIAxes2,"FP_B_0", "FP_B_1", "FP_B_2", "FP_B_3", "FP B SUM", "Treshold A", "Treshold B"); %BERK
@@ -424,11 +433,15 @@ classdef forceplate_main < matlab.apps.AppBase
             
             % Total
             [FP_TOTAL_ALL_PEAKS, FP_TOTAL_ALL_PK_LOCS] = findpeaks(FP_TOTAL_ALL, 'MinPeakProminence', 4,'MinPeakDistance', 250);               % peak promincence to filter the peaks by height and width
+            FP_TOTAL_ALL_PK_LOCS = FP_TOTAL_ALL_PK_LOCS(FP_TOTAL_ALL_PEAKS < constTresholdtotalA);                                             % make it so only the peaks within the thresholds are drawn
+            FP_TOTAL_ALL_PEAKS = FP_TOTAL_ALL_PEAKS(FP_TOTAL_ALL_PEAKS < constTresholdtotalA);
             FP_TOTAL_ALL_CHGPTS = findchangepts(FP_TOTAL_ALL, 'MaxNumChanges', 2, 'Statistic', 'rms');                                      % find the changepts to find the flat part
             FP_TOTAL_ALL_CHGPTS2 = FP_TOTAL_ALL_CHGPTS + [10; -5];                                                                          % add vector to fix offset
             invert_A_TOTAL = -FP_TOTAL_ALL;
             [FP_TOTAL_ALL_VALLEYS, FP_TOTAL_ALL_VL_LOCS] = findpeaks(invert_A_TOTAL, 'MinPeakProminence', 4);
             FP_TOTAL_ALL_VALLEYS = -FP_TOTAL_ALL_VALLEYS;
+            FP_TOTAL_ALL_VL_LOCS = FP_TOTAL_ALL_VL_LOCS(FP_TOTAL_ALL_VALLEYS > constTresholdtotalB);                                           % make it so only the peaks within the thresholds are drawn
+            FP_TOTAL_ALL_VALLEYS = FP_TOTAL_ALL_VALLEYS(FP_TOTAL_ALL_VALLEYS > constTresholdtotalB);
             FP_TOTAL_ALL_PK_LOCS = FP_TOTAL_ALL_PK_LOCS + FP_TOTAL_time(1,1);
             FP_TOTAL_ALL_VL_LOCS = FP_TOTAL_ALL_VL_LOCS + FP_TOTAL_time(1,1);
             plot(app.UIAxes3,FP_TOTAL_ALL_PK_LOCS, FP_TOTAL_ALL_PEAKS, "Marker",".", "LineStyle","none",'MarkerSize', 12);
@@ -677,6 +690,7 @@ classdef forceplate_main < matlab.apps.AppBase
             tresholdA = zeros(1, numRows) + constTresholdA;
             
             ColumnselectADropDownValueChanged(app, event);
+            CalculatepeaksButtonPushed(app, event)
         end
 
         % Value changed function: TresholdBSlider
@@ -686,6 +700,7 @@ classdef forceplate_main < matlab.apps.AppBase
             tresholdB = zeros(1, numRows) + constTresholdB;
             
             ColumnselectADropDownValueChanged(app, event);
+            CalculatepeaksButtonPushed(app, event)
         end
 
         % Value changed function: TresholdASlider_2
@@ -695,6 +710,7 @@ classdef forceplate_main < matlab.apps.AppBase
             tresholdA2 = zeros(1, numRows2) + constTresholdA2;
             
             ColumnselectBDropDownValueChanged(app, event);
+            CalculatepeaksButtonPushed(app, event)
         end
 
         % Value changed function: TresholdBSlider_2
@@ -704,6 +720,7 @@ classdef forceplate_main < matlab.apps.AppBase
             tresholdB2 = zeros(1, numRows2) + constTresholdB2;
             
             ColumnselectBDropDownValueChanged(app, event);
+            CalculatepeaksButtonPushed(app, event)
         end
 
         % Value changed function: TresholdASlider_3
@@ -713,6 +730,7 @@ classdef forceplate_main < matlab.apps.AppBase
             tresholdtotalA = zeros(1,numRows3) + constTresholdtotalA;
             
             ColumnselectTOTALDropDownValueChanged(app, event);
+            CalculatepeaksButtonPushed(app, event)
         end
 
         % Value changed function: TresholdBSlider_3
@@ -722,6 +740,7 @@ classdef forceplate_main < matlab.apps.AppBase
             tresholdtotalB = zeros(1,numRows3) + constTresholdtotalB;
             
             ColumnselectTOTALDropDownValueChanged(app, event);
+            CalculatepeaksButtonPushed(app, event)
         end
     end
 
