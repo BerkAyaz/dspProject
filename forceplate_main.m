@@ -65,6 +65,7 @@ classdef forceplate_main < matlab.apps.AppBase
             signals = datacell{1};
             signals(:,12);
             C = 406.831;
+            g = 9.81;
             nbits = 16;
             WIDTH_FP = 450;
             LENGTH_FP = 450;
@@ -99,6 +100,22 @@ classdef forceplate_main < matlab.apps.AppBase
             [numRows,numCols] = size(FP_A_time);
             baselineConst1 = polyfit(FP_A_time,FP_A_TOTAL,0);
             Baseline1 = zeros(1, numRows) + baselineConst1;
+            
+            %jumpheight 1 calculation
+            [FP_A_TOTAL_PEAKS, FP_A_TOTAL_PK_LOCS] = findpeaks(FP_A_TOTAL, 'MinPeakProminence', 4,'MinPeakDistance', 250);               % peak promincence to filter the peaks by height and width
+            FP_A_TOTAL_CHGPTS = findchangepts(FP_A_TOTAL, 'MaxNumChanges', 2, 'Statistic', 'rms');                                      % find the changepts to find the flat part
+            flightPoints1 = FP_A_TOTAL_CHGPTS + [10; -5];                                                                        % add vector to fix offset            
+            flightTime1 = (flightPoints1(1) - flightPoints1(2))/1000;
+            jumpHeight1 = g/2*(flightTime1/2)^2
+            
+            
+%             %Right way to calculate max jumpheight https://www.sciencedirect.com/topics/engineering/force-plate
+%             Fz1 = maximum force before takeoff;
+%             Fbody1 = baselineConst1 * g;
+%             function1 = Fz1 - FBody1
+%             vel1 = integral(function1,time before takeoff when standing,
+%             takeoff time aka time when maximum force before takeoff);
+%             jumpHeight1 = (vel1 * vel1)/(2 * g);
             
             [numRows2,numCols2] = size(FP_B_time);
             baselineConst2 = polyfit(FP_B_time,FP_B_TOTAL,0);
