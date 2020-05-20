@@ -423,19 +423,19 @@ classdef forceplate_main < matlab.apps.AppBase
             legend(app.UIAxes2,"FP_B_0", "FP_B_1", "FP_B_2", "FP_B_3", "FP B SUM", "FP B Peaks", "FP B Valleys");
             
             % Total
-            [FP_TOTAL_ALL_PEAKS, FP_TOTAL_ALL_PK_LOCS] = findpeaks(FP_TOTAL_ALL, 'MinPeakProminence', 4,'MinPeakDistance', 250);               % peak promincence to filter the peaks by height and width
-            FP_TOTAL_ALL_CHGPTS = findchangepts(FP_TOTAL_ALL, 'MaxNumChanges', 2, 'Statistic', 'rms');                                      % find the changepts to find the flat part
-            FP_TOTAL_ALL_CHGPTS2 = FP_TOTAL_ALL_CHGPTS + [10; -5];                                                                          % add vector to fix offset
-            invert_A_TOTAL = -FP_TOTAL_ALL;
-            [FP_TOTAL_ALL_VALLEYS, FP_TOTAL_ALL_VL_LOCS] = findpeaks(invert_A_TOTAL, 'MinPeakProminence', 4);
-            FP_TOTAL_ALL_VALLEYS = -FP_TOTAL_ALL_VALLEYS;
-            FP_TOTAL_ALL_PK_LOCS = FP_TOTAL_ALL_PK_LOCS + FP_TOTAL_time(1,1);
-            FP_TOTAL_ALL_VL_LOCS = FP_TOTAL_ALL_VL_LOCS + FP_TOTAL_time(1,1);
-            plot(app.UIAxes3,FP_TOTAL_ALL_PK_LOCS, FP_TOTAL_ALL_PEAKS, "Marker",".", "LineStyle","none",'MarkerSize', 12);
-            plot(app.UIAxes3,FP_TOTAL_ALL_VL_LOCS, FP_TOTAL_ALL_VALLEYS, "Marker",".", "LineStyle","none",'MarkerSize', 12);
-            plot(app.UIAxes3,FP_TOTAL_time(FP_TOTAL_ALL_CHGPTS2), FP_TOTAL_ALL(FP_TOTAL_ALL_CHGPTS2), "Marker", ".", "Linestyle", "none", 'MarkerSize', 12);    % plot the changepts op de graph
-            legend(app.UIAxes3,"FP_A_0", "FP_A_1", "FP_A_2", "FP_A_3", "FP A SUM", "FP A Peaks", "FP A Valleys");
-            legend(app.UIAxes3,"FP_A_0", "FP_A_1", "FP_A_2", "FP_A_3", "FP A SUM", "Treshold A", "Treshold B");  %BERK
+            [FP_A_TOTAL_PEAKS, FP_A_TOTAL_PK_LOCS] = findpeaks(FP_A_TOTAL, 'MinPeakProminence', 4,'MinPeakDistance', 250);               % peak promincence to filter the peaks by height and width
+            FP_A_TOTAL_CHGPTS = findchangepts(FP_A_TOTAL, 'MaxNumChanges', 2, 'Statistic', 'rms');                                      % find the changepts to find the flat part
+            FP_A_TOTAL_CHGPTS2 = FP_A_TOTAL_CHGPTS + [10; -5];                                                                          % add vector to fix offset
+            invert_A_TOTAL = -FP_A_TOTAL;
+            [FP_A_TOTAL_VALLEYS, FP_A_TOTAL_VL_LOCS] = findpeaks(invert_A_TOTAL, 'MinPeakProminence', 4);
+            FP_A_TOTAL_VALLEYS = -FP_A_TOTAL_VALLEYS;
+            FP_A_TOTAL_PK_LOCS = FP_A_TOTAL_PK_LOCS + FP_A_time(1,1);
+            FP_A_TOTAL_VL_LOCS = FP_A_TOTAL_VL_LOCS + FP_A_time(1,1);
+            plot(app.UIAxes,FP_A_TOTAL_PK_LOCS, FP_A_TOTAL_PEAKS, "Marker",".", "LineStyle","none",'MarkerSize', 12);
+            plot(app.UIAxes,FP_A_TOTAL_VL_LOCS, FP_A_TOTAL_VALLEYS, "Marker",".", "LineStyle","none",'MarkerSize', 12);
+            plot(app.UIAxes,FP_TOTAL_time(FP_A_TOTAL_CHGPTS2), FP_A_TOTAL(FP_A_TOTAL_CHGPTS2), "Marker", ".", "Linestyle", "none", 'MarkerSize', 12);    % plot the changepts op de graph
+            legend(app.UIAxes,"FP_A_0", "FP_A_1", "FP_A_2", "FP_A_3", "FP A SUM", "FP A Peaks", "FP A Valleys");
+            legend(app.UIAxes,"FP_A_0", "FP_A_1", "FP_A_2", "FP_A_3", "FP A SUM", "Treshold A", "Treshold B");  %BERK
         end
 
         % Button pushed function: SmoothAButton
